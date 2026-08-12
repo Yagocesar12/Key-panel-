@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GHOST REVENDEDORES</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #08090c;
+      color: white;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 420px;
+    }
+
+    .logo {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .logo h1 {
+      font-size: 28px;
+      letter-spacing: 2px;
+    }
+
+    .logo span {
+      color: #777;
+      font-size: 13px;
+    }
+
+    .card {
+      background: #111318;
+      border: 1px solid #252830;
+      border-radius: 16px;
+      padding: 25px;
+      box-shadow: 0 20px 50px rgba(0,0,0,.4);
+    }
+
+    .tabs {
+      display: flex;
+      margin-bottom: 25px;
+      background: #090a0d;
+      border-radius: 10px;
+      padding: 4px;
+    }
+
+    .tabs button {
+      flex: 1;
+      border: 0;
+      padding: 12px;
+      border-radius: 8px;
+      background: transparent;
+      color: #777;
+      font-weight: bold;
+    }
+
+    .tabs button.active {
+      background: #1d2027;
+      color: white;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+      font-size: 22px;
+    }
+
+    .input {
+      width: 100%;
+      padding: 14px;
+      margin-bottom: 12px;
+      border-radius: 10px;
+      border: 1px solid #292c34;
+      background: #090a0d;
+      color: white;
+      outline: none;
+    }
+
+    .input:focus {
+      border-color: #555;
+    }
+
+    .main-btn {
+      width: 100%;
+      padding: 14px;
+      border: 0;
+      border-radius: 10px;
+      background: white;
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 5px;
+    }
+
+    .message {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 13px;
+      color: #aaa;
+    }
+
+    .dashboard {
+      display: none;
+    }
+
+    .balance {
+      background: #181a20;
+      border: 1px solid #292c34;
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 15px;
+    }
+
+    .balance small {
+      color: #888;
+    }
+
+    .balance strong {
+      display: block;
+      font-size: 30px;
+      margin-top: 8px;
+    }
+
+    .menu {
+      display: grid;
+      gap: 10px;
+    }
+
+    .menu button {
+      padding: 15px;
+      border: 1px solid #292c34;
+      border-radius: 10px;
+      background: #111318;
+      color: white;
+      text-align: left;
+      font-weight: bold;
+    }
+
+    .logout {
+      margin-top: 20px !important;
+      color: #ff7777 !important;
+    }
+
+    #registerForm {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="logo">
+    <h1>GHOST REVENDEDORES</h1>
+    <span>PAINEL DE REVENDA</span>
+  </div>
+
+  <!-- LOGIN -->
+  <div class="card" id="authCard">
+
+    <div class="tabs">
+      <button id="loginTab" class="active" onclick="showLogin()">Entrar</button>
+      <button id="registerTab" onclick="showRegister()">Criar conta</button>
+    </div>
+
+    <div id="loginForm">
+      <h2>Bem-vindo</h2>
+
+      <input
+        id="loginEmail"
+        class="input"
+        type="email"
+        placeholder="Seu e-mail"
+      >
+
+      <input
+        id="loginPassword"
+        class="input"
+        type="password"
+        placeholder="Sua senha"
+      >
+
+      <button class="main-btn" onclick="login()">
+        ENTRAR
+      </button>
+
+      <div id="loginMessage" class="message"></div>
+    </div>
+
+    <!-- CADASTRO -->
+
+    <div id="registerForm">
+      <h2>Criar conta</h2>
+
+      <input
+        id="registerUsername"
+        class="input"
+        type="text"
+        placeholder="Nome de usuário"
+      >
+
+      <input
+        id="registerEmail"
+        class="input"
+        type="email"
+        placeholder="Seu e-mail"
+      >
+
+      <input
+        id="registerPassword"
+        class="input"
+        type="password"
+        placeholder="Crie uma senha"
+      >
+
+      <button class="main-btn" onclick="register()">
+        CRIAR CONTA
+      </button>
+
+      <div id="registerMessage" class="message"></div>
+    </div>
+
+  </div>
+
+  <!-- DASHBOARD -->
+
+  <div class="dashboard" id="dashboard">
+
+    <div class="balance">
+      <small>Saldo disponível</small>
+      <strong id="credits">0 créditos</strong>
+    </div>
+
+    <div class="card">
+      <h2>Painel</h2>
+
+      <div class="menu">
+
+        <button>
+          🔑 Gerar Key
+        </button>
+
+        <button>
+          📦 Minhas Keys
+        </button>
+
+        <button>
+          💳 Recarregar créditos
+        </button>
+
+        <button>
+          📋 Histórico
+        </button>
+
+        <button class="logout" onclick="logout()">
+          Sair da conta
+        </button>
+
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+
+  /*
+    IMPORTANTE:
+    Depois vamos colocar aqui os dados públicos
+    do seu projeto Supabase.
+
+    NUNCA coloque aqui a SERVICE_ROLE KEY.
+  */
+
+  const SUPABASE_URL = "COLOQUE_A_URL_DO_SEU_SUPABASE";
+  const SUPABASE_ANON_KEY = "COLOQUE_A_ANON_KEY_DO_SEU_SUPABASE";
+
+  const supabaseClient = supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+  );
+
+
+  function showLogin() {
+    document.getElementById("loginForm").style.display = "block";
+    document.getElementById("registerForm").style.display = "none";
+
+    document.getElementById("loginTab").classList.add("active");
+    document.getElementById("registerTab").classList.remove("active");
+  }
+
+
+  function showRegister() {
+    document.getElementById("loginForm").style.display = "none";
+    document.getElementById("registerForm").style.display = "block";
+
+    document.getElementById("loginTab").classList.remove("active");
+    document.getElementById("registerTab").classList.add("active");
+  }
+
+
+  async function register() {
+
+    const username =
+      document.getElementById("registerUsername").value.trim();
+
+    const email =
+      document.getElementById("registerEmail").value.trim();
+
+    const password =
+      document.getElementById("registerPassword").value;
+
+    const message =
+      document.getElementById("registerMessage");
+
+    if (!username || !email || !password) {
+      message.textContent = "Preencha todos os campos.";
+      return;
+    }
+
+    message.textContent = "Criando conta...";
+
+    const { error } = await supabaseClient.auth.signUp({
+      email: email,
+      password: password,
+      options: {
+        data: {
+          username: username
+        }
+      }
+    });
+
+    if (error) {
+      message.textContent = error.message;
+      return;
+    }
+
+    message.textContent =
+      "Conta criada! Verifique seu e-mail se for solicitado.";
+  }
+
+
+  async function login() {
+
+    const email =
+      document.getElementById("loginEmail").value.trim();
+
+    const password =
+      document.getElementById("loginPassword").value;
+
+    const message =
+      document.getElementById("loginMessage");
+
+    if (!email || !password) {
+      message.textContent = "Preencha e-mail e senha.";
+      return;
+    }
+
+    message.textContent = "Entrando...";
+
+    const { error } =
+      await supabaseClient.auth.signInWithPassword({
+        email: email,
+        password: password
+      });
+
+    if (error) {
+      message.textContent = error.message;
+      return;
+    }
+
+    await loadDashboard();
+  }
+
+
+  async function loadDashboard() {
+
+    const {
+      data: { user }
+    } = await supabaseClient.auth.getUser();
+
+    if (!user) return;
+
+    const { data, error } =
+      await supabaseClient
+        .from("profiles")
+        .select("credits")
+        .eq("id", user.id)
+        .single();
+
+    if (error) {
+      console.log(error);
+      return;
+    }
+
+    document.getElementById("credits").textContent =
+      data.credits + " créditos";
+
+    document.getElementById("authCard").style.display = "none";
+    document.getElementById("dashboard").style.display = "block";
+  }
+
+
+  async function logout() {
+
+    await supabaseClient.auth.signOut();
+
+    document.getElementById("dashboard").style.display = "none";
+    document.getElementById("authCard").style.display = "block";
+
+    showLogin();
+  }
+
+
+  supabaseClient.auth.onAuthStateChange(
+    async (event, session) => {
+
+      if (session) {
+        await loadDashboard();
+      }
+
+    }
+  );
+
+</script>
+
+</body>
+</html>
